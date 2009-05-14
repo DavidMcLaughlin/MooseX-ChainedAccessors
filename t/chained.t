@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7; 
+use Test::More tests => 8; 
 
 use_ok('Moose::Meta::Attribute::Custom::Trait::Chained');
 use_ok('MooseX::ChainedAccessors::Accessor');
@@ -38,7 +38,7 @@ use_ok('MooseX::Traits::Attribute::Chained');
 
 my $simple = SimpleChained->new();
 is($simple->chained_attr(1)->regular_attr, 'hello', 'chained accessor attribute');
-is($simple->chained_attr(0)->set_writer_attr('world')->regular_attr, 'hello', 'chained writer attribute');
+is($simple->chained_attr(0)->set_writer_attr('world')->get_writer_attr, 'world', 'chained writer attribute');
 
 
 {
@@ -71,3 +71,4 @@ is($simple->chained_attr(0)->set_writer_attr('world')->regular_attr, 'hello', 'c
 my $rolechained = ChainedFromRole->new();
 is($rolechained->message, 'world', 'normal access..');
 is($rolechained->debug(1)->message, 'hello', 'chained write affects method call..');
+is($rolechained->debug, 1, 'chained attribute reads ok.');
