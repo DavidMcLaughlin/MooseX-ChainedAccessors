@@ -1,0 +1,41 @@
+Chained accessors on write operations for Moose.
+
+Driving case:
+
+    package Debug;
+    use Moose::Role;
+
+    has 'debug' =>
+    (
+        traits => ['Chained'],
+        is => 'rw',
+        isa => 'Bool',
+    );
+
+    sub debug_message
+    {
+        my ($self, $message) = @_;
+        print $message . "\n" if $self->debug;
+        
+    }
+
+    1;
+
+    package MyClass;
+    use Moose;
+    
+    with 'Debug';
+    
+    sub complex_function
+    {
+        my $self = shift;
+        # ..
+        $self->debug_message("This is happening");
+        # ..
+        return $self;
+    }
+    
+    1;
+    
+    
+    my $results = MyClass->new->debug(1)->complex_function;
