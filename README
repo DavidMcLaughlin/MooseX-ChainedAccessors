@@ -1,5 +1,9 @@
 Chained accessors on write operations for Moose.
 
+Works by over-riding accessor generation methods in Moose::Meta::Accessor. 
+
+=====
+
 Driving case:
 
 package Debug;
@@ -39,5 +43,9 @@ sub complex_function
 
 1;
     
-    
-    my $results = MyClass->new->debug(1)->complex_function;
+   
+my $results = MyClass->new->debug(1)->complex_function;
+
+========
+
+See http://search.cpan.org/dist/Moose/lib/Moose/Cookbook/Meta/Recipe3.pod for documentation on using traits.
