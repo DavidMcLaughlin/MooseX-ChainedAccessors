@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5; # tmp
+use Test::More tests => 7; 
 
 use_ok('Moose::Meta::Attribute::Custom::Trait::Chained');
 use_ok('MooseX::ChainedAccessors::Accessor');
@@ -11,7 +11,7 @@ use_ok('MooseX::Traits::Attribute::Chained');
 {
     package SimpleChained;
     use Moose;
-    
+        
     has 'regular_attr' => (
         is => 'rw',
         isa => 'Str',
@@ -41,3 +41,33 @@ is($simple->chained_attr(1)->regular_attr, 'hello', 'chained accessor attribute'
 is($simple->chained_attr(0)->set_writer_attr('world')->regular_attr, 'hello', 'chained writer attribute');
 
 
+{
+    package Debug;
+    use Moose::Role;
+    
+    has 'debug' => (
+        traits => ['Chained'],
+        is => 'rw',
+        isa => 'Bool',
+        default => sub { 0; },
+    );
+}
+
+
+{
+    package ChainedFromRole;
+    use Moose;
+    
+    with 'Debug';
+    
+    sub message 
+    {
+        my $self = shift;
+        return 'hello' if $self->debug;
+        return 'world';
+    }
+}
+
+my $rolechained = ChainedFromRole->new();
+is($rolechained->message, 'world', 'normal access..');
+is($rolechained->debug(1)->message, 'hello', 'chained write affects method call..');
