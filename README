@@ -1,51 +1,67 @@
+MooseX::ChainedAccessors
+
 Chained accessors on write operations for Moose.
 
-Works by over-riding accessor generation methods in Moose::Meta::Accessor. 
+INSTALLATION
 
-=====
-
-Driving case:
-
-package Debug;
-use Moose::Role;
-
-has 'debug' =>
-(
-    traits => ['Chained'],
-    is => 'rw',
-    isa => 'Bool',
-    default => sub { 0; },
-);
-
-sub debug_message
-{
-    my ($self, $message) = @_;
-    print $message . "\n" if $self->debug;
+    To install this module, run the following commands:
     
-}
+    perl ./Makefile.PL
+    make test
+    make install
 
-1;
 
+USAGE
 
-package MyClass;
-use Moose;
-
-with 'Debug';
-
-sub complex_function
-{
-    my $self = shift;
-    # ..
-    $self->debug_message("This is happening");
-    # ..
-    return $self;
-}
-
-1;
+    package MyClass;
+    use Moose;
     
-   
-my $results = MyClass->new->debug(1)->complex_function;
+    has 'chained_attr' =>
+    (
+        traits => ['Chained'],
+        is     => 'rw',
+        isa    => 'Str',        
+    );
+    
+    sub my_method
+    {
+        my $self = shift;
+        print 'hello, ' . $self->chained_attr;
+    }
+    
+    1;    
+    
+    MyClass->new->chained_attr('world')->my_method(); # hello, world!
 
-========
+
+Chained accessors also work with explicit 'reader/writer' accessors. 
+
+    package MyClass;
+    use Moose;
+    
+    has 'attr' => 
+    (
+        traits => ['Chained'],
+        is     => 'rw',
+        isa    => 'Str',
+        reader => 'get_attr',
+        writer => 'set_sttr',
+    );
+    
+    sub my_method
+    {
+        my $self = shift;
+        print $self->get_attr;
+    }
+    
+    1l
+    
+    MyClass->new->set_attr('hello, world')->my_method(); # hello, world
+
+Hopefully it's obvious why read operations can't be chained. 
+        
+
+DOCUMENTATION
 
 See http://search.cpan.org/dist/Moose/lib/Moose/Cookbook/Meta/Recipe3.pod for documentation on using traits.
+And also http://www.dmclaughlin.com/2009/05/15/chained-accessors-in-moose/ for the release post.
